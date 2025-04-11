@@ -10,14 +10,15 @@ const cardTemplate = document.querySelector('#card-template').content;
 function createCard(images) {
     const placesItem = cardTemplate.querySelector('.places__item').cloneNode(true);
     placesItem.querySelector('.card__image').src = images.link;
+    placesItem.setAttribute("alt", images);
     placesItem.querySelector('.card__title').textContent = images.name;
-    placesItem.querySelector('.card__delete-button').addEventListener('click', () => CardDelete(placesItem));
+    placesItem.querySelector('.card__delete-button').addEventListener('click', () => cardDelete(placesItem));
 
     return placesItem;
 }
 
 // @todo: Функция удаления карточки
-function CardDelete(item) {
+function cardDelete(item) {
     item.remove();
 }
 
