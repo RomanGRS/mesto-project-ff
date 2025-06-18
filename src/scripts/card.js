@@ -1,45 +1,78 @@
 
 
-function createCard(cardTemplate, cardData, deleteCard, likeCard, showImage) {
-  
-  const placesItem = cardTemplate.content.cloneNode(true)
-  const card = placesItem.querySelector('.card')
-  const cardImage = card.querySelector('.card__image')
-  const cardTitle = card.querySelector('.card__title')
-  const cardDeleteButton = card.querySelector('.card__delete-button')
-  const cardLikeButton = card.querySelector('.card__like-button')
+import { addLike, deleteLike } from "./api.js";
 
-  cardImage.alt = cardData.name
-  cardImage.src = cardData.link
-  cardTitle.textContent = cardData.name
+// @todo: Темплейт карточки
+const content = document.querySelector("#card-template").content,
+  templateCard = content.querySelector(".card");
 
-  cardImage.addEventListener('click', () => {
-    showImage(cardData.link, cardData.name)
-  })
+// @todo: Функция создания карточки
+const createCard = function (
+  item,
+  userId,
+  removeCard,
+  likeCard,
+  openPopupImage
+) {
+  const newCard = templateCard.cloneNode(true),
+    cardImage = newCard.querySelector(".card__image"),
+    cardTitle = newCard.querySelector(".card__title"),
+    deleteButton = newCard.querySelector(".card__delete-button"),
+    likeButton = newCard.querySelector(".card__like-button"),
+    cardLikeCount = newCard.querySelector(".card__like-count");
 
-  cardLikeButton.addEventListener('click', () => {
-    likeCard(cardLikeButton)
-  })
+  newCard.id = item["_id"];
 
-  cardDeleteButton.addEventListener('click', () => {
-    deleteCard(card)
-  })
+  cardImage.setAttribute("src", item.link);
+  cardImage.setAttribute("alt", item.name);
+  cardTitle.textContent = item.name;
+  cardLikeCount.textContent = item.likes.length;
 
-  return placesItem;
+  const isLiked = item.likes.some((like) => like._id === userId);
+  if (isLiked) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
 
-}
+  if (item.owner._id === userId) {
+    deleteButton.addEventListener("click", (evt) => {
+      removeCard(evt, item._id);
+    });
+  } else {
+    deleteButton.remove();
+  }
 
-//Удаление карточки
-function deleteCard(element) {
-    if (element && element.remove) {
-      element.remove()
-    }
-}
+  likeButton.addEventListener("click", (evt) => {
+    likeCard(evt, item._id);
+  });
 
-//Функция лайка
-function likeCard(element) {
-  element.classList.toggle('card__like-button_is-active')
-}
+  cardImage.addEventListener("click", function () {
+    openPopupImage(item);
+  });
 
-export {deleteCard, likeCard, createCard}
+  return newCard;
+};
 
+const likeCard = (evt, cardId) => {
+  const currentLikes = evt.target.parentNode.querySelector(".card__like-count");
+  if (evt.target.classList.contains("card__like-button_is-active")) {
+    deleteLike(cardId)
+      .then((updatedCard) => {
+        evt.target.classList.remove("card__like-button_is-active");
+        currentLikes.textContent = updatedCard.likes.length;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    addLike(cardId)
+      .then((updatedCard) => {
+        evt.target.classList.add("card__like-button_is-active");
+        currentLikes.textContent = updatedCard.likes.length;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
+
+export { createCard, likeCard };

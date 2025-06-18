@@ -19,5 +19,3 @@ function closeModal(modal) {
 }
 
 export {openModal, closeModal}
-
-

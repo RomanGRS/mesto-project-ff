@@ -33,8 +33,19 @@ module.exports = {
           {
             // регулярное выражение, которое ищет все файлы с такими расширениями
             test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
-            type: 'asset/resource'
+            type: 'asset/resource',
+            generator: {
+              filename: "images/[name].[hash][ext]",
+            },
           },
+          {
+            test: /\.(woff(2)?|eot|ttf|otf)$/i,
+            type: "asset/resource",
+            generator: {
+            filename: "fonts/[name].[hash][ext]",
+            },
+          },
+          
           {
             // применять это правило только к CSS-файлам
             test: /\.css$/,
@@ -55,8 +66,9 @@ module.exports = {
           template: './src/index.html' // путь к файлу index.html
       }),
       new CleanWebpackPlugin(), // использовали плагин
-      new MiniCssExtractPlugin() // подключение плагина для объединения файлов
-      ] // добавьте массив
+      new MiniCssExtractPlugin(), // подключение плагина для объединения файлов
+      ], // добавьте массив
+       devtool: 'source-map',
 };
 
 // module.exports — это синтаксис экспорта в Node.js 
