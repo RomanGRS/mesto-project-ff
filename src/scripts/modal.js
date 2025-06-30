@@ -1,8 +1,16 @@
+
 //Открываем модалку
 function openModal(modal) {
   modal.classList.add('popup_is-opened')
   document.addEventListener('keyup', closeEsc)
 } 
+
+//Закрываем модалку
+function closeModal(modal) {
+  modal.classList.remove('popup_is-opened')
+  document.removeEventListener('keyup', closeEsc)
+}
+
 
 //Закрываем по нажатию клавиши Esc
 function closeEsc(evt) {
@@ -11,11 +19,5 @@ function closeEsc(evt) {
     closeModal(openedPopup)
   }
 } 
-
-//Закрываем модалку
-function closeModal(modal) {
-  modal.classList.remove('popup_is-opened')
-  document.removeEventListener('keyup', closeEsc)
-}
 
 export {openModal, closeModal}

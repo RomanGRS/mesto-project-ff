@@ -6,84 +6,90 @@ export const config = {
   }
 };
 
-
-const getResponse = (res) => {
-  return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
+// Создаем общую функцию для ошибки
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
 };
 
-const getInitialUser = async () => {
-  return fetch(config.baseUrl + "/users/me", {
+// Загрузка с сервера карточек
+export const getInitialCards = () => {
+  return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-const updateUser = async (user) => {
-  return fetch(config.baseUrl + "/users/me", {
+
+// Загрузка с сервера информации о пользователе
+export const getUserInfo = () => {
+  return fetch(`${config.baseUrl}/users/me`, {
+    headers: config.headers,
+  }).then(checkResponse);
+};
+
+// Обновление профиля методом PATCH
+export const updateProfileUser = (card) => {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: "PATCH",
     headers: config.headers,
     body: JSON.stringify({
-      name: user.name,
-      about: user.about,
+      name:card.name,
+      about:card.about
     }),
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-const updateUserAvatar = async (link) => {
-  return fetch(config.baseUrl + "/users/me/avatar", {
-    method: "PATCH",
-    headers: config.headers,
-    body: JSON.stringify({
-      avatar: link,
-    }),
-  }).then((res) => getResponse(res));
-};
 
-const getInitialCards = async () => {
-  return fetch(config.baseUrl + "/cards", {
-    headers: config.headers,
-  }).then((res) => getResponse(res));
-};
-
-const addCard = async (card) => {
-  return fetch(config.baseUrl + "/cards", {
+// Добавление новой карточки на сервер
+export const addNewCardServer = (nameCard, linkCard) => {
+  return fetch(`${config.baseUrl}/cards`, {
     method: "POST",
     headers: config.headers,
     body: JSON.stringify({
-      name: card.name,
-      link: card.link,
+      name: nameCard,
+      link: linkCard,
     }),
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-const deleteCard = async (cardId) => {
-  return fetch(config.baseUrl + `/cards/${cardId}`, {
+
+// Удаление карточки с сервера
+export const deleteCardServer = (userId) => {
+  return fetch(`${config.baseUrl}/cards/${userId}`, {
     method: "DELETE",
     headers: config.headers,
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-const addLike = async (cardId) => {
-  return fetch(config.baseUrl + `/cards/likes/${cardId}`, {
+
+// Постановка лайка
+export const addLikeCardServer = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "PUT",
     headers: config.headers,
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-const deleteLike = async (cardId) => {
-  return fetch(config.baseUrl + `/cards/likes/${cardId}`, {
+// Снятие лайка
+export const deleteLikeCardServer = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "DELETE",
     headers: config.headers,
-  }).then((res) => getResponse(res));
+  }).then(checkResponse);
 };
 
-export {
-  getInitialUser,
-  updateUser,
-  updateUserAvatar,
-  getInitialCards,
-  addCard,
-  deleteCard,
-  addLike,
-  deleteLike,
+// Обновление аватара
+export const updateAvatar = (avatarUrl) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatarUrl,
+    }),
+  }).then(checkResponse);
 };
+
+
 

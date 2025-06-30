@@ -1,78 +1,85 @@
 
+import { addLikeCardServer, deleteLikeCardServer, deleteCardServer } from './api.js';
 
-import { addLike, deleteLike } from "./api.js";
+const cardTemplate = document.querySelector('#card-template').content;
 
-// @todo: Темплейт карточки
-const content = document.querySelector("#card-template").content,
-  templateCard = content.querySelector(".card");
+function createCard(item, userId, likeCard, showImage) {
+  const placesItem = cardTemplate.querySelector('.card').cloneNode(true)
+  const cardImage = placesItem.querySelector('.card__image')
+  const cardTitle = placesItem.querySelector('.card__title')
+  const cardDeleteButton = placesItem.querySelector('.card__delete-button')
+  const cardLikeButton = placesItem.querySelector('.card__like-button')
+  const likeCountElement = placesItem.querySelector('.card__like-count')
+  
+  placesItem.id = item['_id'];
 
-// @todo: Функция создания карточки
-const createCard = function (
-  item,
-  userId,
-  removeCard,
-  likeCard,
-  openPopupImage
-) {
-  const newCard = templateCard.cloneNode(true),
-    cardImage = newCard.querySelector(".card__image"),
-    cardTitle = newCard.querySelector(".card__title"),
-    deleteButton = newCard.querySelector(".card__delete-button"),
-    likeButton = newCard.querySelector(".card__like-button"),
-    cardLikeCount = newCard.querySelector(".card__like-count");
+  cardImage.alt = item.name
+  cardImage.src = item.link
+  cardTitle.textContent = item.name
+  likeCountElement.textContent = item.likes.length;
 
-  newCard.id = item["_id"];
-
-  cardImage.setAttribute("src", item.link);
-  cardImage.setAttribute("alt", item.name);
-  cardTitle.textContent = item.name;
-  cardLikeCount.textContent = item.likes.length;
 
   const isLiked = item.likes.some((like) => like._id === userId);
   if (isLiked) {
-    likeButton.classList.add("card__like-button_is-active");
+    cardLikeButton.classList.add('card__like-button_is-active');
   }
 
-  if (item.owner._id === userId) {
-    deleteButton.addEventListener("click", (evt) => {
-      removeCard(evt, item._id);
-    });
-  } else {
-    deleteButton.remove();
-  }
 
-  likeButton.addEventListener("click", (evt) => {
+  cardImage.addEventListener('click', () => {
+    showImage(item.link, item.name);
+  })
+
+  cardLikeButton.addEventListener('click', (evt) => {
     likeCard(evt, item._id);
-  });
+  })
 
-  cardImage.addEventListener("click", function () {
-    openPopupImage(item);
+  if(item.owner._id === userId) {
+   cardDeleteButton.addEventListener('click', (evt) => {
+    deleteCard(evt, item._id);
   });
+  } else {
+    cardDeleteButton.remove();
+  }
 
-  return newCard;
-};
+  return placesItem;
+}
+
+
+//Функция удалния карточки
+function deleteCard(evt, userId) {
+  deleteCardServer(userId)
+    .then(() => {
+      const card = evt.target.closest('.card');
+      card.remove();
+    })
+    .catch((err) => console.log(err));
+}
+
+
+//Функция лайка
 
 const likeCard = (evt, cardId) => {
-  const currentLikes = evt.target.parentNode.querySelector(".card__like-count");
-  if (evt.target.classList.contains("card__like-button_is-active")) {
-    deleteLike(cardId)
-      .then((updatedCard) => {
-        evt.target.classList.remove("card__like-button_is-active");
-        currentLikes.textContent = updatedCard.likes.length;
+  const isLikes = evt.target.parentNode.querySelector('.card__like-count');
+  if (evt.target.classList.contains('card__like-button_is-active')) {
+    deleteLikeCardServer(cardId)
+      .then((data) => {
+        evt.target.classList.remove('card__like-button_is-active');
+        isLikes.textContent = data.likes.length;
       })
       .catch((err) => {
-        console.log(err);
+        console.log('Ошибка', err);
       });
   } else {
-    addLike(cardId)
-      .then((updatedCard) => {
-        evt.target.classList.add("card__like-button_is-active");
-        currentLikes.textContent = updatedCard.likes.length;
+    addLikeCardServer(cardId)
+      .then((data) => {
+        evt.target.classList.add('card__like-button_is-active');
+        isLikes.textContent = data.likes.length;
       })
       .catch((err) => {
-        console.log(err);
+        console.log('Ошибка', err);
       });
   }
 };
 
-export { createCard, likeCard };
+
+export {createCard, deleteCard, likeCard}
