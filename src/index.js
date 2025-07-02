@@ -68,16 +68,16 @@ const editForm = {
 
 
 const validationConfig = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible"
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
 };
 
-let userId;
 
+let userId;
 
 
 //Закрываем окна
@@ -113,7 +113,9 @@ addCardForm.form.addEventListener('submit', addNewCard);
 
 //Открываем по клику на кнопку 
 modalAddCard.openButton.addEventListener('click', () => {
-  openModal(modals.addNewCard)
+  clearValidation(forms.addNewCard, validationConfig);
+  addCardForm.form.reset();
+  openModal(modals.addNewCard);
 });
 
 const addLoading = (isLoading, button) => {
@@ -141,17 +143,16 @@ function addNewCard(evt) {
         deleteCard
       );
       placesList.prepend(newCard);
+      closeModal(modals.addNewCard);
+      addCardForm.form.reset();
     })
     .catch((err) => {
       console.log('Ошибка', err);
     })
     .finally(() => {
       addLoading(false, addCardForm.form.querySelector('.popup__button'));
-      closeModal(modals.addNewCard);
-      addCardForm.form.reset();
     });
 }
-
 
 //Профиль
 //Отправляем формы
@@ -159,7 +160,9 @@ forms.popupTypeEdit.addEventListener('submit', submitEditForm)
 
 //Открываем по клику на кнопку 
 modalEdit.openButton.addEventListener('click', () => {
-  openModal(modals.popupTypeEdit)
+  openModal(modals.popupTypeEdit);
+  clearValidation(forms.popupTypeEdit, validationConfig);
+ 
   fillForm();
 })
 
@@ -191,7 +194,6 @@ function submitEditForm(evt) {
       addLoading(false, editForm.form.querySelector('.popup__button'));
     })
 };
-
 
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {

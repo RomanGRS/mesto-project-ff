@@ -21,7 +21,6 @@ export const getInitialCards = () => {
   }).then(checkResponse);
 };
 
-
 // Загрузка с сервера информации о пользователе
 export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
@@ -41,7 +40,6 @@ export const updateProfileUser = (card) => {
   }).then(checkResponse);
 };
 
-
 // Добавление новой карточки на сервер
 export const addNewCardServer = (nameCard, linkCard) => {
   return fetch(`${config.baseUrl}/cards`, {
@@ -54,7 +52,6 @@ export const addNewCardServer = (nameCard, linkCard) => {
   }).then(checkResponse);
 };
 
-
 // Удаление карточки с сервера
 export const deleteCardServer = (userId) => {
   return fetch(`${config.baseUrl}/cards/${userId}`, {
@@ -62,7 +59,6 @@ export const deleteCardServer = (userId) => {
     headers: config.headers,
   }).then(checkResponse);
 };
-
 
 // Постановка лайка
 export const addLikeCardServer = (cardId) => {
@@ -90,6 +86,3 @@ export const updateAvatar = (avatarUrl) => {
     }),
   }).then(checkResponse);
 };
-
-
-
